@@ -155,7 +155,7 @@ python main.py
 | Component | Description & Responsibility |
 | --- | --- |
 | **Lexer** | Scans JavaScript source code character-by-character and generates tokens (keywords, literals, operators). Handles comment removal, string escape sequences, and multi-character operators. |
-| **Parser** | Performs syntax analysis on the token stream using a recursive descent algorithm with precedence climbing. Builds a structured Abstract Syntax Tree (AST). |
+| **Parser** | Performs syntax analysis on the token stream using a *recursive descent* algorithm with precedence climbing. Builds a structured Abstract Syntax Tree (AST). |
 | **Runtime** | Traverses the AST in a tree-walking pattern to evaluate expressions, execute statements, and output logs to `stdout`. Delegates array and object prototype actions to decoupled modules. |
 | **Environment** | Stores variables, constants, and functions in nested scopes. Connects closures to parent scopes, implementing lexical scoping for correct closures and nested lookups. |
 
@@ -188,7 +188,7 @@ python main.py
 ## Screenshots
 
 ### Interactive REPL & Execution Showcase
-![REPL Showcase](ThunderJS.png)
+![REPL Showcase](image.png)
 
 ---
 
