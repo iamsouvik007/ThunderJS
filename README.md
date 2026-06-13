@@ -90,7 +90,12 @@ The tokenizer breaks source code into tokens (keywords, operators, literals, etc
 │   ├── runtime/
 │   │   ├── interpreter.py   # Tree-walking interpreter (AST → output)
 │   │   └── environment.py   # Lexical scope and variable storage
-│   └── objects/             # Runtime object type stubs
+│   ├── objects/             # Runtime representation for arrays, objects, functions
+│   │   ├── js_array.py
+│   │   ├── js_object.py
+│   │   └── js_function.py
+│   └── utils/               # Shared helpers and interpreter utilities
+│       └── js_helpers.py
 ├── tests/                   # Test case files (.js)
 └── examples/                # Example JavaScript files
 ```
@@ -183,11 +188,8 @@ JavaScript Runtime & Interactive REPL
 Built for Thunder Hackathon 2.0
 ==================================================
 
-Commands:
-help   Show available commands
-clear  Clear terminal
-exit   Exit REPL
-quit   Exit REPL
+Type JavaScript code below.
+Type 'exit' or 'quit' to leave.
 
 READY
 
