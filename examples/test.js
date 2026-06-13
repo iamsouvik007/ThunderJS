@@ -1,5 +1,3 @@
-let num = 7;
-
-if (num % 2 === 1) {
-    let result = "Odd";
-}
+let x = 10;
+let y = 20;
+console.log(x + y);

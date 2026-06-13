@@ -1,4 +1,5 @@
 import sys
+import os
 from src.lexer.tokenizer import Tokenizer
 from src.parser.parser import Parser
 from src.runtime.interpreter import Interpreter
@@ -11,12 +12,19 @@ def run(code):
     interpreter.execute(ast)
 
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) > 1:
-        filepath = sys.argv[1]
-        with open(filepath) as f:
-            code = f.read()
+        arg = sys.argv[1]
+        if os.path.isfile(arg):
+            with open(arg, encoding="utf-8") as f:
+                code = f.read()
+        else:
+            code = arg
     else:
         code = sys.stdin.read()
 
     run(code)
+
+
+if __name__ == "__main__":
+    main()
