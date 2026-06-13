@@ -1,2 +1,3 @@
 let x = 10;
-let name = "Souvik";
+let y = 20;
+let z = x + y;

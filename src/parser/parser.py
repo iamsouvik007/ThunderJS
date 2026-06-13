@@ -5,6 +5,7 @@ from src.parser.ast_nodes import (
     NumberLiteral,
     StringLiteral,
     Identifier,
+    BinaryExpression,
 )
 
 
@@ -60,24 +61,7 @@ class Parser:
 
         self.expect(TokenType.ASSIGN)
 
-        value_token = self.current_token()
-
-        if value_token.type == TokenType.NUMBER:
-            value = NumberLiteral(
-                value_token.value
-            )
-
-        elif value_token.type == TokenType.STRING:
-            value = StringLiteral(
-                value_token.value
-            )
-
-        else:
-            raise Exception(
-                "Expected number or string"
-            )
-
-        self.advance()
+        value = self.parse_expression()
 
         self.expect(TokenType.SEMICOLON)
 
@@ -85,3 +69,62 @@ class Parser:
             name,
             value
         )
+
+    def parse_expression(self):
+        left_token = self.current_token()
+
+        if left_token.type == TokenType.NUMBER:
+            left = NumberLiteral(left_token.value)
+
+        elif left_token.type == TokenType.STRING:
+            left = StringLiteral(left_token.value)
+
+        elif left_token.type == TokenType.IDENTIFIER:
+            left = Identifier(left_token.value)
+
+        else:
+            raise Exception(
+                "Invalid expression"
+            )
+
+        self.advance()
+
+        current = self.current_token()
+
+        if current.type in (
+            TokenType.PLUS,
+            TokenType.MINUS,
+            TokenType.STAR,
+            TokenType.SLASH,
+            TokenType.MOD,
+        ):
+            operator = current.value
+
+            self.advance()
+
+            right_token = self.current_token()
+
+            if right_token.type == TokenType.NUMBER:
+                right = NumberLiteral(
+                    right_token.value
+                )
+
+            elif right_token.type == TokenType.IDENTIFIER:
+                right = Identifier(
+                    right_token.value
+                )
+
+            else:
+                raise Exception(
+                    "Invalid right operand"
+                )
+
+            self.advance()
+
+            return BinaryExpression(
+                left,
+                operator,
+                right
+            )
+
+        return left
