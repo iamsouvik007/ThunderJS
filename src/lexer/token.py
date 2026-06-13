@@ -5,15 +5,25 @@ class TokenType(Enum):
     # Keywords
     LET = auto()
     CONST = auto()
+    VAR = auto()
 
     IF = auto()
     ELSE = auto()
 
     FOR = auto()
     WHILE = auto()
+    DO = auto()
+
+    SWITCH = auto()
+    CASE = auto()
+    DEFAULT = auto()
+    BREAK = auto()
+    CONTINUE = auto()
 
     FUNCTION = auto()
     RETURN = auto()
+    NEW = auto()
+    TYPEOF = auto()
 
     TRUE = auto()
     FALSE = auto()
@@ -34,8 +44,12 @@ class TokenType(Enum):
     POWER = auto()
 
     PLUS_PLUS = auto()
+    MINUS_MINUS = auto()
     PLUS_ASSIGN = auto()
     MINUS_ASSIGN = auto()
+    STAR_ASSIGN = auto()
+    SLASH_ASSIGN = auto()
+    MOD_ASSIGN = auto()
 
     ASSIGN = auto()
 
@@ -54,6 +68,10 @@ class TokenType(Enum):
     AND = auto()
     OR = auto()
     NOT = auto()
+
+    QUESTION = auto()
+    COLON = auto()
+    ARROW = auto()
 
     # Delimiters
     LPAREN = auto()

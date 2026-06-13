@@ -5,12 +5,21 @@ class Tokenizer:
     KEYWORDS = {
         "let": TokenType.LET,
         "const": TokenType.CONST,
+        "var": TokenType.VAR,
         "if": TokenType.IF,
         "else": TokenType.ELSE,
         "for": TokenType.FOR,
         "while": TokenType.WHILE,
+        "do": TokenType.DO,
+        "switch": TokenType.SWITCH,
+        "case": TokenType.CASE,
+        "default": TokenType.DEFAULT,
+        "break": TokenType.BREAK,
+        "continue": TokenType.CONTINUE,
         "function": TokenType.FUNCTION,
         "return": TokenType.RETURN,
+        "new": TokenType.NEW,
+        "typeof": TokenType.TYPEOF,
         "true": TokenType.TRUE,
         "false": TokenType.FALSE,
         "null": TokenType.NULL,
@@ -72,7 +81,7 @@ class Tokenizer:
         identifier = ""
         while (
             self.current_char() is not None
-            and (self.current_char().isalnum() or self.current_char() == "_")
+            and (self.current_char().isalnum() or self.current_char() == "_" or self.current_char() == "$")
         ):
             identifier += self.current_char()
             self.advance()
@@ -94,10 +103,14 @@ class Tokenizer:
                     value += '\n'
                 elif esc == 't':
                     value += '\t'
+                elif esc == 'r':
+                    value += '\r'
                 elif esc == '\\':
                     value += '\\'
                 elif esc == quote:
                     value += quote
+                elif esc == '0':
+                    value += '\0'
                 else:
                     value += esc
                 self.advance()
@@ -105,6 +118,30 @@ class Tokenizer:
                 value += self.current_char()
                 self.advance()
         self.advance()
+        return Token(TokenType.STRING, value)
+
+    def read_template_literal(self):
+        self.advance()  # skip opening backtick
+        value = ""
+        while self.current_char() is not None and self.current_char() != '`':
+            if self.current_char() == '\\':
+                self.advance()
+                esc = self.current_char()
+                if esc == 'n':
+                    value += '\n'
+                elif esc == 't':
+                    value += '\t'
+                elif esc == '\\':
+                    value += '\\'
+                elif esc == '`':
+                    value += '`'
+                else:
+                    value += esc
+                self.advance()
+            else:
+                value += self.current_char()
+                self.advance()
+        self.advance()  # skip closing backtick
         return Token(TokenType.STRING, value)
 
     def tokenize(self):
@@ -121,12 +158,16 @@ class Tokenizer:
                 tokens.append(self.read_number())
                 continue
 
-            if current.isalpha() or current == "_":
+            if current.isalpha() or current == "_" or current == "$":
                 tokens.append(self.read_identifier())
                 continue
 
-            if current in ('"', "'", '`'):
+            if current in ('"', "'"):
                 tokens.append(self.read_string())
+                continue
+
+            if current == '`':
+                tokens.append(self.read_template_literal())
                 continue
 
             # Three-character tokens
@@ -151,8 +192,18 @@ class Tokenizer:
                 self.position += 2
                 continue
 
+            if current == '=' and self.peek() == '>':
+                tokens.append(Token(TokenType.ARROW, "=>"))
+                self.position += 2
+                continue
+
             if current == '+' and self.peek() == '+':
                 tokens.append(Token(TokenType.PLUS_PLUS, "++"))
+                self.position += 2
+                continue
+
+            if current == '-' and self.peek() == '-':
+                tokens.append(Token(TokenType.MINUS_MINUS, "--"))
                 self.position += 2
                 continue
 
@@ -163,6 +214,21 @@ class Tokenizer:
 
             if current == '-' and self.peek() == '=':
                 tokens.append(Token(TokenType.MINUS_ASSIGN, "-="))
+                self.position += 2
+                continue
+
+            if current == '*' and self.peek() == '=':
+                tokens.append(Token(TokenType.STAR_ASSIGN, "*="))
+                self.position += 2
+                continue
+
+            if current == '/' and self.peek() == '=':
+                tokens.append(Token(TokenType.SLASH_ASSIGN, "/="))
+                self.position += 2
+                continue
+
+            if current == '%' and self.peek() == '=':
+                tokens.append(Token(TokenType.MOD_ASSIGN, "%="))
                 self.position += 2
                 continue
 
@@ -216,6 +282,8 @@ class Tokenizer:
                 ",": TokenType.COMMA,
                 ".": TokenType.DOT,
                 ";": TokenType.SEMICOLON,
+                "?": TokenType.QUESTION,
+                ":": TokenType.COLON,
             }
 
             if current in single_tokens:
