@@ -836,7 +836,8 @@ class Interpreter:
         if method == "ceil":
             return int(math.ceil(args[0]))
         if method == "round":
-            return int(round(args[0]))
+            v = args[0]
+            return int(math.floor(v + 0.5))
         if method == "abs":
             r = abs(args[0])
             return int(r) if isinstance(r, float) and r == int(r) else r
