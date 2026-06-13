@@ -15,6 +15,11 @@ class TokenType(Enum):
     FUNCTION = auto()
     RETURN = auto()
 
+    TRUE = auto()
+    FALSE = auto()
+    NULL = auto()
+    UNDEFINED = auto()
+
     # Literals
     IDENTIFIER = auto()
     NUMBER = auto()
@@ -27,6 +32,10 @@ class TokenType(Enum):
     SLASH = auto()
     MOD = auto()
     POWER = auto()
+
+    PLUS_PLUS = auto()
+    PLUS_ASSIGN = auto()
+    MINUS_ASSIGN = auto()
 
     ASSIGN = auto()
 
@@ -58,6 +67,7 @@ class TokenType(Enum):
 
     COMMA = auto()
     DOT = auto()
+    SPREAD = auto()
 
     SEMICOLON = auto()
 

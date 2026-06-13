@@ -1,3 +1,5 @@
-let x = 10;
-let y = 20;
-let result = x === y;
+let num = 7;
+
+if (num % 2 === 1) {
+    let result = "Odd";
+}
