@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="ThunderJS.png" alt="ThunderJS Banner" width="600" />
+  <img src="ThunderJS.png" alt="ThunderJS Banner" width="100%">
 </p>
 
 <h1 align="center">⚡ ThunderJS</h1>
