@@ -102,6 +102,20 @@ class Tokenizer:
                 tokens.append(self.read_string())
                 continue
 
+            if (
+                current == "="
+                and self.peek() == "="
+                and self.peek(2) == "="
+            ):
+                tokens.append(
+                    Token(TokenType.STRICT_EQUAL, "===")
+                )
+
+                self.position += 3
+                continue
+
+            
+
             single_tokens = {
                 "+": TokenType.PLUS,
                 "-": TokenType.MINUS,
@@ -125,10 +139,15 @@ class Tokenizer:
 
             if current in single_tokens:
                 tokens.append(
-                    Token(single_tokens[current], current)
+                    Token(
+                        single_tokens[current],
+                        current
+                    )
                 )
+
                 self.advance()
                 continue
+
 
             raise Exception(
                 f"Unexpected character: {current}"
@@ -137,3 +156,13 @@ class Tokenizer:
         tokens.append(Token(TokenType.EOF))
 
         return tokens
+    
+    def peek(self, offset=1):
+        pos = self.position + offset
+
+        if pos >= len(self.source):
+            return None
+
+        return self.source[pos]
+    
+    

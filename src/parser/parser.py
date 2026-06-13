@@ -84,10 +84,15 @@ class Parser:
 
         else:
             raise Exception(
-                "Invalid expression"
+                f"Invalid expression: {left_token.type}"
             )
 
+        # Move past left operand
         self.advance()
+
+        # Simple expression (e.g. let x = 10;)
+        if self.current_token().type == TokenType.SEMICOLON:
+            return left
 
         current = self.current_token()
 
@@ -97,6 +102,7 @@ class Parser:
             TokenType.STAR,
             TokenType.SLASH,
             TokenType.MOD,
+            TokenType.STRICT_EQUAL,
         ):
             operator = current.value
 
@@ -109,6 +115,11 @@ class Parser:
                     right_token.value
                 )
 
+            elif right_token.type == TokenType.STRING:
+                right = StringLiteral(
+                    right_token.value
+                )
+
             elif right_token.type == TokenType.IDENTIFIER:
                 right = Identifier(
                     right_token.value
@@ -116,7 +127,7 @@ class Parser:
 
             else:
                 raise Exception(
-                    "Invalid right operand"
+                    f"Invalid right operand: {right_token.type}"
                 )
 
             self.advance()

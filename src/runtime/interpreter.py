@@ -67,6 +67,9 @@ class Interpreter:
 
         if node.operator == "%":
             return left % right
+        
+        if node.operator == "===":
+            return left == right
 
         raise Exception(
             f"Unknown operator: {node.operator}"
