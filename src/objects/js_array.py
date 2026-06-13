@@ -1,10 +1,10 @@
 class JSArray:
-    def __init__(self, arr, interpreter):
+    def __init__(self, arr, strict_equal):
         self.arr = arr
-        self.interpreter = interpreter
+        self.strict_equal = strict_equal
 
     def execute(self, method, args):
-        from src.runtime.interpreter import UNDEFINED, js_to_string, js_to_boolean
+        from src.utils.js_helpers import UNDEFINED, js_to_string, js_to_boolean
         arr = self.arr
         
         def _flatten(a, d):
@@ -38,18 +38,18 @@ class JSArray:
             search = args[0] if args else UNDEFINED
             start = int(args[1]) if len(args) > 1 else 0
             for i in range(start, len(arr)):
-                if self.interpreter._strict_equal(arr[i], search):
+                if self.strict_equal(arr[i], search):
                     return i
             return -1
         if method == "lastIndexOf":
             search = args[0] if args else UNDEFINED
             for i in range(len(arr) - 1, -1, -1):
-                if self.interpreter._strict_equal(arr[i], search):
+                if self.strict_equal(arr[i], search):
                     return i
             return -1
         if method == "includes":
             search = args[0] if args else UNDEFINED
-            return any(self.interpreter._strict_equal(item, search) for item in arr)
+            return any(self.strict_equal(item, search) for item in arr)
         if method == "slice":
             start = int(args[0]) if args else 0
             end = int(args[1]) if len(args) > 1 else len(arr)
