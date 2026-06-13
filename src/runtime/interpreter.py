@@ -882,7 +882,7 @@ class Interpreter:
         import json
         if method == "stringify":
             obj = args[0]
-            return json.dumps(self._to_json_serializable(obj))
+            return json.dumps(self._to_json_serializable(obj), separators=(",", ":"))
         if method == "parse":
             return json.loads(args[0])
         raise Exception(f"Unknown JSON method: {method}")
