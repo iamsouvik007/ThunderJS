@@ -6,6 +6,14 @@ from src.runtime.interpreter import Interpreter
 
 
 def run(code):
+    # Handle Windows cmd.exe echo behavior where outer quotes and trailing spaces are piped
+    code_stripped = code.strip()
+    if len(code_stripped) >= 2:
+        first = code_stripped[0]
+        last = code_stripped[-1]
+        if first == last and first in ('"', "'", "`"):
+            code = code_stripped[1:-1]
+
     tokens = Tokenizer(code).tokenize()
     ast = Parser(tokens).parse()
     interpreter = Interpreter()
