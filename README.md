@@ -177,17 +177,27 @@ python main.py
 Example session:
 
 ```
-ThunderJS v1.0
-Interactive JavaScript Shell
-Type 'exit' or 'quit' to quit.
+==================================================
+⚡ ThunderJS v1.0
+JavaScript Runtime & Interactive REPL
+Built for Thunder Hackathon 2.0
+==================================================
 
-js > let x = 10;
-js > function add(a, b) {
-...  return a + b;
-...  }
-js > console.log(add(x, 20));
+Commands:
+help   Show available commands
+clear  Clear terminal
+exit   Exit REPL
+quit   Exit REPL
+
+READY
+
+JS ❯ let x = 10;
+JS ❯ function add(a, b) {
+... ❯ return a + b;
+... ❯ }
+JS ❯ console.log(add(x, 20));
 30
-js > exit
+JS ❯ exit
 ```
 
 ### Alternative — Module Execution

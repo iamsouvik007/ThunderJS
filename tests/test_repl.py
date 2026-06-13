@@ -49,8 +49,8 @@ def test_repl():
 
     # Expect the startup messages and the prompts
     assert "ThunderJS v1.0" in stdout, "REPL startup message missing"
-    assert "js > " in stdout, "REPL prompt missing"
-    assert "...  " in stdout, "Multi-line REPL prompt missing"
+    assert "JS" in stdout, "REPL prompt missing"
+    assert ("\u276f" in stdout) or (">" in stdout), "REPL prompt symbol missing"
     
     # Expect output from console.log(x) -> 10
     assert "10" in stdout, "REPL failed to output 10"

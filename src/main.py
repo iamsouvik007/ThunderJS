@@ -21,9 +21,39 @@ def run(code):
 
 
 def run_repl():
-    print("ThunderJS v1.0")
-    print("Interactive JavaScript Shell")
-    print("Type 'exit' or 'quit' to quit.")
+    # Enable ANSI escape code processing in Windows command prompts
+    if os.name == 'nt':
+        os.system('')
+
+    CYAN = "\033[96m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    RESET = "\033[0m"
+
+    # Dynamic fallback to ASCII symbols if the terminal encoding doesn't support Unicode characters
+    try:
+        encoding = sys.stdout.encoding or 'utf-8'
+        "⚡ ❯".encode(encoding)
+        lightning = "⚡ "
+        prompt_symbol = "❯"
+    except UnicodeEncodeError:
+        lightning = ""
+        prompt_symbol = ">"
+
+    print(f"{CYAN}==================================================")
+    print(f"{lightning}ThunderJS v1.0")
+    print("JavaScript Runtime & Interactive REPL")
+    print("Built for Thunder Hackathon 2.0")
+    print(f"=================================================={RESET}")
+    print("")
+    print(f"{YELLOW}Commands:{RESET}")
+    print(f"{CYAN}help  {RESET} Show available commands")
+    print(f"{CYAN}clear {RESET} Clear terminal")
+    print(f"{CYAN}exit  {RESET} Exit REPL")
+    print(f"{CYAN}quit  {RESET} Exit REPL")
+    print("")
+    print(f"{GREEN}READY{RESET}")
     print("")
 
     interpreter = Interpreter()
@@ -31,13 +61,38 @@ def run_repl():
     brace_balance = 0
     paren_balance = 0
 
+    import builtins
+    original_print = builtins.print
+
+    def repl_print(*args, **kwargs):
+        # Format printed strings with green color for success output in REPL
+        colored_args = [f"{GREEN}{arg}{RESET}" for arg in args]
+        original_print(*colored_args, **kwargs)
+
     while True:
         try:
-            prompt = "js > " if not buffer else "...  "
+            prompt = f"{YELLOW}JS {CYAN}{prompt_symbol}{RESET} " if not buffer else f"{CYAN}... {prompt_symbol}{RESET} "
             line = input(prompt)
-            if not buffer and line.strip() in ("exit", "quit"):
-                break
             
+            # Check commands if buffer is empty
+            if not buffer:
+                cmd = line.strip()
+                if cmd in ("exit", "quit"):
+                    break
+                if cmd == "clear":
+                    os.system('cls' if os.name == 'nt' else 'clear')
+                    print(f"{CYAN}Environment cleared{RESET}")
+                    continue
+                if cmd == "help":
+                    print(f"{CYAN}==================================================")
+                    print(f"{YELLOW}Command   {CYAN}| {YELLOW}Description")
+                    print(f"{CYAN}--------------------------------------------------")
+                    print(f"{CYAN}help      {CYAN}| {RESET}Show this help menu")
+                    print(f"{CYAN}clear     {CYAN}| {RESET}Clear the terminal screen")
+                    print(f"{CYAN}exit/quit {CYAN}| {RESET}Exit the interactive session")
+                    print(f"{CYAN}=================================================={RESET}")
+                    continue
+
             buffer.append(line)
             
             # Basic counting of braces and parentheses to detect block completion
@@ -61,15 +116,27 @@ def run_repl():
 
                 tokens = Tokenizer(code).tokenize()
                 ast = Parser(tokens).parse()
-                interpreter.execute(ast)
+                
+                # Monkey-patch builtins.print to print in green during execution
+                builtins.print = repl_print
+                try:
+                    interpreter.execute(ast)
+                finally:
+                    builtins.print = original_print
+                    
         except (KeyboardInterrupt, EOFError):
-            print("\nExiting.")
+            print(f"\n{CYAN}Exiting.{RESET}")
             break
         except Exception as e:
             buffer = []
             brace_balance = 0
             paren_balance = 0
-            print(f"Error: {e}")
+            err_msg = str(e)
+            if "not defined" in err_msg:
+                var_name = err_msg.split("'")[1] if "'" in err_msg else "variable"
+                print(f"{RED}ReferenceError: {var_name} is not defined{RESET}")
+            else:
+                print(f"{RED}Error: {err_msg}{RESET}")
 
 
 def main():
