@@ -1,6 +1,6 @@
 # ⚡ ThunderJS — A JavaScript Interpreter Built in Python
 
-A hand-crafted JavaScript interpreter written from scratch in Python. Built for **Thunder Hackathon 2.0**.
+A hand-crafted JavaScript interpreter written from scratch in Python, featuring a complete lexer, recursive descent parser, and tree-walking interpreter. Built for **Thunder Hackathon 2.0**.
 
 ## 🚀 How to Run
 
@@ -47,22 +47,88 @@ src/
 │   ├── ast_nodes.py    # AST node definitions
 │   └── parser.py       # Recursive descent parser
 ├── runtime/
-│   ├── environment.py  # Variable scope management
-│   └── interpreter.py  # Tree-walking interpreter
+│   ├── environment.py  # Variable scope management with lexical scoping
+│   └── interpreter.py  # Tree-walking interpreter with JS semantics
 └── main.py             # CLI entry point
 ```
 
+### Design
+
+- **Lexer**: Tokenizes JS source into a stream of tokens. Handles multi-character operators (`===`, `!==`, `**`, `=>`, `...`), string escape sequences, single/multi-line comments, template literals, and numeric literals (int/float).
+
+- **Parser**: Recursive descent parser producing an AST. Implements full operator precedence: assignment → ternary → logical OR → logical AND → equality → comparison → additive → multiplicative → exponentiation → unary → postfix → call/member → primary.
+
+- **Interpreter**: Tree-walking evaluator with proper JS semantics including type coercion, scope chaining, closures, and control flow signals (return/break/continue).
+
 ## 🔧 Supported JavaScript Features
 
-- **Variables**: `let`, `const` declarations with assignment
-- **Data types**: Numbers (int/float), Strings, Booleans, Arrays, `null`, `undefined`
-- **Operators**: `+`, `-`, `*`, `/`, `%`, `**`, `===`, `!==`, `==`, `!=`, `<`, `<=`, `>`, `>=`, `&&`, `||`, `!`
-- **Assignment**: `=`, `+=`, `-=`, `++`
-- **Control flow**: `if` / `else if` / `else`
-- **Loops**: `for`, `while`
-- **Functions**: declarations, parameters, return statements, closures
-- **Arrays**: literals, spread operator (`...`), `push`, `pop`, `shift`, `unshift`, `reverse`, `join`, `slice`, `splice`, `concat`, `indexOf`, `includes`, `sort`, `map`, `filter`, `reduce`, `find`, `some`, `every`, `forEach`
-- **Strings**: `split`, `join`, `toUpperCase`, `toLowerCase`, `trim`, `includes`, `indexOf`, `startsWith`, `endsWith`, `substring`, `slice`, `replace`, `replaceAll`, `charAt`, `repeat`
-- **Math**: `Math.floor`, `Math.ceil`, `Math.round`, `Math.abs`, `Math.sqrt`, `Math.pow`, `Math.max`, `Math.min`, `Math.random`, `Math.PI`, `Math.E`
-- **Built-in**: `console.log`
-- **Comments**: single-line (`//`) and multi-line (`/* */`)
+### Variable Declarations
+- `let`, `const`, `var`
+- Uninitialized declarations (`let x;`)
+
+### Data Types
+- Numbers (integers, floats, `NaN`, `Infinity`)
+- Strings (single/double quotes, template literals, escape sequences)
+- Booleans (`true`, `false`)
+- `null` and `undefined`
+- Arrays
+- Objects (literals with shorthand, computed keys, methods, spread)
+
+### Operators
+- Arithmetic: `+`, `-`, `*`, `/`, `%`, `**`
+- Comparison: `===`, `!==`, `==`, `!=`, `<`, `<=`, `>`, `>=`
+- Logical: `&&`, `||`, `!`
+- Assignment: `=`, `+=`, `-=`, `*=`, `/=`, `%=`
+- Update: `++`, `--` (prefix and postfix)
+- Ternary: `? :`
+- Spread: `...`
+- `typeof`
+
+### Control Flow
+- `if` / `else if` / `else`
+- `for` loops
+- `while` loops
+- `do...while` loops
+- `switch` / `case` / `default` (with fallthrough)
+- `break`, `continue`
+
+### Functions
+- Function declarations
+- Function expressions
+- Arrow functions (`=>`)
+- Closures with lexical scoping
+- Callbacks and higher-order functions
+- Rest parameters (`...args`)
+- Recursive functions
+
+### Built-in Objects
+
+**Math**: `floor`, `ceil`, `round`, `abs`, `sqrt`, `pow`, `max`, `min`, `random`, `log`, `sin`, `cos`, `tan`, `trunc`, `sign`, `PI`, `E`
+
+**JSON**: `stringify`, `parse`
+
+**Object**: `keys`, `values`, `entries`, `assign`, `freeze`, `create`
+
+**Array** (static): `isArray`, `from`, `of`
+
+**Number** (static): `isInteger`, `isNaN`, `isFinite`, `parseInt`, `parseFloat`
+
+**Date**: `new Date()`, `getTime`, `getFullYear`, `getMonth`, `getDate`, `getHours`, `getMinutes`, `getSeconds`
+
+### Array Methods
+`push`, `pop`, `shift`, `unshift`, `slice`, `splice`, `concat`, `includes`, `indexOf`, `lastIndexOf`, `sort`, `reverse`, `join`, `map`, `filter`, `reduce`, `reduceRight`, `find`, `findIndex`, `some`, `every`, `forEach`, `flat`, `flatMap`, `fill`, `at`, `keys`, `values`, `entries`, `toString`
+
+### String Methods
+`split`, `join`, `toUpperCase`, `toLowerCase`, `trim`, `trimStart`, `trimEnd`, `includes`, `indexOf`, `lastIndexOf`, `startsWith`, `endsWith`, `substring`, `slice`, `replace`, `replaceAll`, `charAt`, `charCodeAt`, `repeat`, `padStart`, `padEnd`, `concat`, `at`, `toString`, `valueOf`
+
+### Global Functions
+`parseInt`, `parseFloat`, `isNaN`, `isFinite`, `Number`, `String`, `Boolean`
+
+### Type Coercion
+- String concatenation with `+` operator
+- JS-style loose equality (`==`, `!=`)
+- Truthiness/falsiness for conditions
+
+### Comments
+- Single-line: `//`
+- Multi-line: `/* */`
