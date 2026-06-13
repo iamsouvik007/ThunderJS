@@ -166,6 +166,30 @@ echo 'console.log("hello");' | python main.py
 python main.py "let x = 42; console.log(x);"
 ```
 
+### Method 4 — Interactive REPL
+
+If you run `python main.py` directly without arguments and without redirected/piped stdin, the interpreter starts in interactive REPL mode:
+
+```bash
+python main.py
+```
+
+Example session:
+
+```
+ThunderJS v1.0
+Interactive JavaScript Shell
+Type 'exit' or 'quit' to quit.
+
+js > let x = 10;
+js > function add(a, b) {
+...  return a + b;
+...  }
+js > console.log(add(x, 20));
+30
+js > exit
+```
+
 ### Alternative — Module Execution
 
 ```bash

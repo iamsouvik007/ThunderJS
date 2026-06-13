@@ -20,6 +20,58 @@ def run(code):
     interpreter.execute(ast)
 
 
+def run_repl():
+    print("ThunderJS v1.0")
+    print("Interactive JavaScript Shell")
+    print("Type 'exit' or 'quit' to quit.")
+    print("")
+
+    interpreter = Interpreter()
+    buffer = []
+    brace_balance = 0
+    paren_balance = 0
+
+    while True:
+        try:
+            prompt = "js > " if not buffer else "...  "
+            line = input(prompt)
+            if not buffer and line.strip() in ("exit", "quit"):
+                break
+            
+            buffer.append(line)
+            
+            # Basic counting of braces and parentheses to detect block completion
+            for char in line:
+                if char == '{':
+                    brace_balance += 1
+                elif char == '}':
+                    brace_balance -= 1
+                elif char == '(':
+                    paren_balance += 1
+                elif char == ')':
+                    paren_balance -= 1
+
+            if brace_balance <= 0 and paren_balance <= 0:
+                code = "\n".join(buffer)
+                buffer = []
+                brace_balance = 0
+                paren_balance = 0
+                if not code.strip():
+                    continue
+
+                tokens = Tokenizer(code).tokenize()
+                ast = Parser(tokens).parse()
+                interpreter.execute(ast)
+        except (KeyboardInterrupt, EOFError):
+            print("\nExiting.")
+            break
+        except Exception as e:
+            buffer = []
+            brace_balance = 0
+            paren_balance = 0
+            print(f"Error: {e}")
+
+
 def main():
     if len(sys.argv) > 1:
         arg = sys.argv[1]
@@ -28,10 +80,13 @@ def main():
                 code = f.read()
         else:
             code = arg
+        run(code)
     else:
-        code = sys.stdin.read()
-
-    run(code)
+        if sys.stdin.isatty() or os.environ.get("THUNDER_REPL") == "1":
+            run_repl()
+        else:
+            code = sys.stdin.read()
+            run(code)
 
 
 if __name__ == "__main__":
