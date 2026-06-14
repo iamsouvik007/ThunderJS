@@ -21,6 +21,44 @@
 
 ThunderJS is a tree-walking interpreter that executes JavaScript code without relying on any external JavaScript engines. The entire evaluation pipeline — tokenization, parsing, and direct execution — is custom-implemented in Python.
 
+## Installation
+
+```bash
+git clone https://github.com/iamsouvik007/ThunderJS.git
+cd ThunderJS
+```
+
+Requirements:
+
+* Python 3.10+
+* No external dependencies
+
+## Quick Start
+
+Run a JavaScript file:
+
+```bash
+python main.py examples/test.js
+```
+
+Run inline JavaScript:
+
+```bash
+python main.py "console.log(1 + 2);"
+```
+
+Run JavaScript from standard input:
+
+```bash
+echo "console.log(1 + 2);" | python main.py
+```
+
+Start the REPL:
+
+```bash
+python main.py
+```
+
 ## Quick Stats
 
 | Metric | Value |
@@ -71,7 +109,7 @@ ThunderJS is a tree-walking interpreter that executes JavaScript code without re
 ## Features
 
 ### Language Features
-- [x] **Variable Declarations**: Support for block-scoped `let`, `const`, and function-scoped `var`.
+- [x] **Variable Declarations**: Support for block-scoped `let`, `const`, and `var`.
 - [x] **Primitives**: Standard handling of numbers, strings, booleans, `null`, and `undefined`.
 - [x] **Operators**: Full arithmetic (`+`, `-`, `*`, `/`, `%`, `**`), logic (`&&`, `||`, `!`), and comparisons (`===`, `!==`, etc.).
 - [x] **Assignment**: Compound assignment operators (`=`, `+=`, `-=`, `*=`, `/=`, `%=`).
@@ -161,34 +199,98 @@ python main.py
 
 ### Directory Structure
 ```
+├── .gitignore
+├── README.md
+├── ThunderJS.png
+├── image.png
 ├── main.py                  # Top-level entry point
+├── requirements.txt         # Project requirements
+├── run_all_tests.py         # Test suite runner
+├── test_interpreter.py      # Interpreter scratch test script
+├── test_parser.py           # Parser scratch test script
+├── test_tokenizer.py        # Tokenizer scratch test script
+├── examples/
+│   └── test.js              # Example JavaScript file
 ├── src/
+│   ├── __init__.py
 │   ├── main.py              # Runtime entry point and CLI handling
 │   ├── lexer/
+│   │   ├── __init__.py
 │   │   ├── token.py         # Token type definitions
 │   │   └── tokenizer.py     # Lexical analysis (source → tokens)
+│   ├── objects/             # Decoupled JS prototype/static handlers
+│   │   ├── __init__.py
+│   │   ├── js_array.py
+│   │   └── js_object.py
 │   ├── parser/
+│   │   ├── __init__.py
 │   │   ├── ast_nodes.py     # AST node class definitions
 │   │   └── parser.py        # Recursive descent parser (tokens → AST)
 │   ├── runtime/
-│   │   ├── interpreter.py   # Tree-walking interpreter (AST → output)
-│   │   └── environment.py   # Lexical scope and variable storage
-│   ├── objects/             # Decoupled JS prototype/static handlers
-│   │   ├── js_array.py
-│   │   ├── js_object.py
-│   │   └── js_function.py
+│   │   ├── __init__.py
+│   │   ├── environment.py   # Lexical scope and variable storage
+│   │   └── interpreter.py   # Tree-walking interpreter (AST → output)
 │   └── utils/               # Shared helpers and interpreter utilities
+│       ├── __init__.py
 │       └── js_helpers.py
-├── tests/                   # Test case files (.js)
-└── examples/                # Example JavaScript files
+├── tests/                   # Test suite containing JS and Python tests
+│   ├── error_tests/         # Syntax and runtime error test cases
+│   │   ├── test_call_number.js
+│   │   ├── test_function_no_name.js
+│   │   ├── test_if_rparen.js
+│   │   ├── test_let_eq.js
+│   │   ├── test_null_method.js
+│   │   ├── test_ref_error.js
+│   │   ├── test_unexpected_char.js
+│   │   ├── test_unterminated_in_call.js
+│   │   └── test_unterminated_string.js
+│   ├── debug_fib.js
+│   ├── debug_fib2.js
+│   ├── hidden_tc1_var.js
+│   ├── hidden_tc2_var.js
+│   ├── hidden_tc3_var.js
+│   ├── hidden_tc4_var.js
+│   ├── hidden_tc5_var.js
+│   ├── hidden_test1.js
+│   ├── hidden_test10.js
+│   ├── hidden_test2.js
+│   ├── hidden_test3.js
+│   ├── hidden_test4.js
+│   ├── hidden_test5.js
+│   ├── hidden_test6.js
+│   ├── hidden_test7.js
+│   ├── hidden_test8.js
+│   ├── hidden_test9.js
+│   ├── judge_arrays.js
+│   ├── judge_objects.js
+│   ├── judge_recursion.js
+│   ├── tc1_odd_even.js
+│   ├── tc2_triangle.js
+│   ├── tc3_armstrong.js
+│   ├── tc4_array_reverse.js
+│   ├── tc5_palindrome.js
+│   └── test_repl.py         # REPL validation script
 ```
 
 ---
 
-## Screenshots
+## Testing
 
-### Interactive REPL & Execution Showcase
-![REPL Showcase](image.png)
+The project includes a comprehensive suite of 25 validated test cases. These cover basic language functionality, recursion, complex data structures, and edge cases, ensuring the interpreter remains robust during development.
+
+Run the complete test suite:
+
+```bash
+python run_all_tests.py
+```
+
+This executes all 25 visible and hidden validation test cases.
+
+Example of running a single test file:
+
+```bash
+python main.py tests/tc1_odd_even.js
+```
 
 ---
 
@@ -204,20 +306,19 @@ python main.py
 
 ## Limitations
 
-The interpreter supports the subset of ECMAScript specifications needed to solve common algorithms and course exercises. It does not implement full standards compliance.
+ThunderJS focuses on the subset of JavaScript required for hackathon test cases and common algorithmic problems.
 
-| Feature | Status | Alternative / Workaround |
-| --- | --- | --- |
-| **Classes** | Not Supported | Use factory functions or functional constructors. |
-| **Promises** | Not Supported | Use synchronous callback functions. |
-| **Modules** | Not Supported | Include definitions within a single executed buffer. |
-| **Async/Await** | Not Supported | Rely on synchronous control flow. |
-| **Destructuring** | Not Supported | Assign variables using direct index or property keys. |
-| **for...of / for...in** | Not Supported | Use a standard `for` loop or `Array.prototype.forEach()`. |
-| **try / catch / throw** | Not Supported | Check inputs explicitly for safety. |
-| **Regular Expressions** | Not Supported | Use string methods like `split()`, `slice()`, or `indexOf()`. |
-| **Prototype Chain / `this`** | Not Supported | Rely on closures and closure environments. |
-| **Template Interpolation `${}`**| Not Supported | Use string concatenation (`+`). |
+Currently unsupported:
+
+* Classes
+* Promises
+* Async/Await
+* ES Modules
+* Destructuring Assignment
+* for...of / for...in
+* try/catch/finally
+* Regular Expressions
+* Prototype Chain and `this` binding
 
 ---
 
