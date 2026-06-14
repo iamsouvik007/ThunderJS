@@ -1,5 +1,6 @@
 import sys
 import os
+import shutil
 from src.lexer.tokenizer import Tokenizer
 from src.parser.parser import Parser
 from src.runtime.interpreter import Interpreter
@@ -42,11 +43,13 @@ def run_repl():
         prompt_symbol = ">"
 
     def print_banner():
-        print(f"{CYAN}==================================================")
-        print(f"{lightning}ThunderJS v1.0")
-        print("JavaScript Runtime & Interactive REPL")
-        print("Built for Thunder Hackathon 2.0")
-        print(f"=================================================={RESET}")
+        width = shutil.get_terminal_size((80, 24)).columns
+        sep = "=" * width
+        print(f"{CYAN}{sep}")
+        print(f"{lightning}ThunderJS v1.0".center(width))
+        print("JavaScript Runtime & Interactive REPL".center(width))
+        print("Built for Thunder Hackathon 2.0".center(width))
+        print(f"{sep}{RESET}")
         print("")
         print("Type JavaScript code below.")
         print("Type 'exit' or 'quit' to leave.")
@@ -58,8 +61,21 @@ def run_repl():
 
     interpreter = Interpreter()
     buffer = []
-    brace_balance = 0
-    paren_balance = 0
+
+    def _is_incomplete(code):
+        """Try to tokenize+parse code. Return True if it looks incomplete, False otherwise."""
+        try:
+            tokens = Tokenizer(code).tokenize()
+            Parser(tokens).parse()
+            return False  # Parsed fine, not incomplete
+        except Exception as e:
+            msg = str(e)
+            # If the parser/tokenizer hit EOF while expecting more input,
+            # the code is genuinely incomplete (e.g., unclosed brace/paren).
+            if "got TokenType.EOF" in msg or "got EOF" in msg:
+                return True
+            # Any other error means the code is invalid, not incomplete.
+            return False
 
     while True:
         try:
@@ -78,37 +94,27 @@ def run_repl():
                     continue
 
             buffer.append(line)
-            
-            # Basic counting of braces and parentheses to detect block completion
-            for char in line:
-                if char == '{':
-                    brace_balance += 1
-                elif char == '}':
-                    brace_balance -= 1
-                elif char == '(':
-                    paren_balance += 1
-                elif char == ')':
-                    paren_balance -= 1
+            code = "\n".join(buffer)
 
-            if brace_balance <= 0 and paren_balance <= 0:
-                code = "\n".join(buffer)
+            if not code.strip():
                 buffer = []
-                brace_balance = 0
-                paren_balance = 0
-                if not code.strip():
-                    continue
+                continue
 
-                tokens = Tokenizer(code).tokenize()
-                ast = Parser(tokens).parse()
-                interpreter.execute(ast)
+            # Check if the code looks incomplete (hit EOF while parsing)
+            if _is_incomplete(code):
+                continue  # Stay in multiline mode
+
+            # Code is complete (or has a real error) — try to execute
+            buffer = []
+            tokens = Tokenizer(code).tokenize()
+            ast = Parser(tokens).parse()
+            interpreter.execute(ast)
                     
         except (KeyboardInterrupt, EOFError):
             print("\nThanks for using ThunderJS.")
             break
         except Exception as e:
             buffer = []
-            brace_balance = 0
-            paren_balance = 0
             err_msg = str(e)
             if "not defined" in err_msg:
                 var_name = err_msg.split("'")[1] if "'" in err_msg else "variable"

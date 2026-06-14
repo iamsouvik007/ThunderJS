@@ -117,6 +117,8 @@ class Tokenizer:
             else:
                 value += self.current_char()
                 self.advance()
+        if self.current_char() is None:
+            raise Exception("SyntaxError: Unterminated string literal")
         self.advance()
         return Token(TokenType.STRING, value)
 
@@ -141,6 +143,8 @@ class Tokenizer:
             else:
                 value += self.current_char()
                 self.advance()
+        if self.current_char() is None:
+            raise Exception("SyntaxError: Unterminated template literal")
         self.advance()  # skip closing backtick
         return Token(TokenType.STRING, value)
 
